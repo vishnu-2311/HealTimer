@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealTimer Pro | MedPulse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hidden-section { display: none; }
+        .active-section { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <div id="registration-screen" class="fixed inset-0 bg-emerald-900 z-[100] flex items-center justify-center p-4 hidden">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full">
+            <div class="text-center mb-6">
+                <div class="bg-emerald-100 text-emerald-600 w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                    <i class="fas fa-user-medical"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-emerald-800">User Profile</h2>
+                <p class="text-slate-500">Enter patient details to begin.</p>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="reg-name" placeholder="Full Name" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                <input type="number" id="reg-age" placeholder="Age" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                <input type="email" id="reg-email" placeholder="Email Address" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                <input type="tel" id="reg-guardian" placeholder="Guardian Phone Number" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                <button onclick="saveProfile()" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl hover:bg-emerald-700 transition-all">Setup My HealTimer</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bg-emerald-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 text-2xl font-bold tracking-tighter cursor-pointer" onclick="showSection('home')">
+                <i class="fas fa-heart-pulse text-emerald-400"></i> HEALTIMER
+            </div>
+            <div class="hidden md:flex gap-8 font-medium">
+                <button onclick="showSection('home')" class="hover:text-emerald-300 transition">Home</button>
+                <button onclick="showSection('about')" class="hover:text-emerald-300 transition">About</button>
+                <button onclick="showSection('profile')" class="hover:text-emerald-300 transition">Profile</button>
+                <button onclick="showSection('contact')" class="hover:text-emerald-300 transition">Contact</button>
+            </div>
+            <div id="live-clock" class="bg-emerald-900 px-4 py-1 rounded-full font-mono text-emerald-400 border border-emerald-700">00:00:00</div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        
+        <section id="home-section" class="active-section">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-100">
+                        <h3 class="text-xl font-bold text-emerald-900 mb-4">New Reminder</h3>
+                        <div class="space-y-4">
+                            <input type="text" id="med-name" placeholder="Medicine Name" class="w-full p-3 border rounded-xl bg-slate-50 outline-none">
+                            <input type="time" id="med-time" class="w-full p-3 border rounded-xl bg-slate-50 outline-none">
+                            <select id="med-interval" class="w-full p-3 border rounded-xl bg-slate-50 outline-none">
+                                <option value="8">Every 8 Hours</option>
+                                <option value="12">Every 12 Hours</option>
+                                <option value="24" selected>Every 24 Hours</option>
+                            </select>
+                            <button onclick="addMedication()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-lg">Set Alarm</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6" id="home-title">Active Schedule</h3>
+                    <div id="med-list" class="grid gap-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about-section" class="hidden-section">
+            <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 max-w-3xl mx-auto">
+                <h2 class="text-3xl font-bold text-emerald-800 mb-4">About HealTimer</h2>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    HealTimer is a digital healthcare assistant designed to ensure medicine adherence. 
+                    Our system uses high-contrast UI, voice technology, and an automated escalation system 
+                    to alert guardians if a patient misses a critical dose.
+                </p>
+                <div class="p-6 bg-emerald-50 rounded-2xl">
+                    <h4 class="font-bold text-emerald-900 mb-2">The MedPulse Mission</h4>
+                    <p class="text-sm text-slate-500 italic">"Saving lives through timely intervention and smart technology."</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="profile-section" class="hidden-section">
+            <div class="bg-white p-8 rounded-3xl shadow-sm max-w-md mx-auto border border-slate-100">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <h2 id="prof-name" class="text-2xl font-bold text-slate-800">User Name</h2>
+                    <p id="prof-email" class="text-slate-400 text-sm italic">email@provider.com</p>
+                </div>
+                <div class="space-y-4 bg-slate-50 p-6 rounded-2xl">
+                    <div class="flex justify-between"><span class="text-slate-500">Age:</span> <span id="prof-age" class="font-bold">--</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Guardian:</span> <span id="prof-guardian" class="font-bold text-emerald-600">--</span></div>
+                </div>
+                <button onclick="logout()" class="w-full mt-6 text-red-500 font-bold">Reset All Data</button>
+            </div>
+        </section>
+
+        <section id="contact-section" class="hidden-section">
+            <div class="bg-white p-10 rounded-3xl shadow-sm max-w-3xl mx-auto border border-slate-100">
+                <h2 class="text-3xl font-bold text-emerald-800 mb-8 text-center">Contact Developers</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold text-xl text-slate-700 mb-2">Location</h4>
+                        <p class="text-slate-600">Muthayammal Engineering College , Rasipuram</p>
+                    </div>
+                    <div>
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-xl text-slate-700 flex items-center gap-2"><i class="fas fa-envelope-open-text text-emerald-500"></i> Support</h4>
+                            <p class="text-slate-600"><strong>Vishnu E:</strong> vishnu@healtimer.ai</p>
+                            <p class="text-slate-600"><strong>Udhayasuriya V:</strong> suriya@healtimer.ai</p>
+                            <p class="text-slate-600"><strong>Vel R:</strong> vel@healtimer.ai</p>
+                            <p class="text-slate-600"><strong>Subash P:</strong> subash@healtimer.ai</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="alert-modal" class="fixed inset-0 bg-emerald-900/95 hidden flex items-center justify-center p-4 z-[200]">
+        <div class="bg-white rounded-[40px] p-10 max-w-sm w-full text-center shadow-2xl">
+            <div id="countdown-ring" class="text-emerald-500 text-7xl mb-4 font-bold tabular-nums">60</div>
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Time for Medicine</h2>
+            <p id="alert-text" class="text-slate-500 mb-8 text-lg font-medium">Please take your dose.</p>
+            <button onclick="acknowledgeDose()" class="w-full bg-emerald-600 text-white font-bold py-5 rounded-2xl text-xl shadow-xl hover:bg-emerald-700">
+                I HAVE TAKEN IT
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let medications = JSON.parse(localStorage.getItem('ht_meds')) || [];
+        let userData = JSON.parse(localStorage.getItem('ht_user')) || null;
+        let countdownInterval = null;
+
+        // Navigation Engine (FIXED)
+        function showSection(sectionId) {
+            const sections = ['home', 'about', 'profile', 'contact'];
+            sections.forEach(s => {
+                const el = document.getElementById(`${s}-section`);
+                if (s === sectionId) {
+                    el.classList.remove('hidden-section');
+                    el.classList.add('active-section');
+                } else {
+                    el.classList.add('hidden-section');
+                    el.classList.remove('active-section');
+                }
+            });
+        }
+
+        window.onload = () => {
+            if ("Notification" in window) Notification.requestPermission();
+            if (!userData) {
+                document.getElementById('registration-screen').classList.remove('hidden');
+            } else {
+                updateUIState();
+                renderMeds();
+            }
+        };
+
+        function updateUIState() {
+            document.getElementById('prof-name').innerText = userData.name;
+            document.getElementById('prof-email').innerText = userData.email;
+            document.getElementById('prof-age').innerText = userData.age;
+            document.getElementById('prof-guardian').innerText = userData.guardian;
+            document.getElementById('home-title').innerText = `Schedule for ${userData.name}`;
+        }
+
+        function saveProfile() {
+            const data = {
+                name: document.getElementById('reg-name').value,
+                age: document.getElementById('reg-age').value,
+                email: document.getElementById('reg-email').value,
+                guardian: document.getElementById('reg-guardian').value
+            };
+            if (!data.name || !data.guardian) return alert("Fill Name and Guardian Phone!");
+            localStorage.setItem('ht_user', JSON.stringify(data));
+            userData = data;
+            document.getElementById('registration-screen').classList.add('hidden');
+            updateUIState();
+        }
+
+        // Logic Engine
+        setInterval(() => {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + 
+                            now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+            
+            medications.forEach(med => {
+                if (med.active && med.nextTime === timeStr) {
+                    triggerAlert(med);
+                }
+            });
+        }, 1000);
+
+        function triggerAlert(med) {
+            med.active = false;
+            if (Notification.permission === "granted") {
+                new Notification("Medicine Time!", { body: `Please take ${med.name}` });
+            }
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(`Time for ${med.name}`));
+            
+            document.getElementById('alert-text').innerText = `Dose: ${med.name}`;
+            document.getElementById('alert-modal').classList.remove('hidden');
+            
+            let val = 60;
+            document.getElementById('countdown-ring').innerText = val;
+            countdownInterval = setInterval(() => {
+                val--;
+                document.getElementById('countdown-ring').innerText = val;
+                if (val <= 0) {
+                    clearInterval(countdownInterval);
+                    alert(`GUARDIAN ALERT: SMS sent to ${userData.guardian} regarding missed dose.`);
+                    acknowledgeDose();
+                }
+            }, 1000);
+        }
+
+        function acknowledgeDose() {
+            window.speechSynthesis.cancel();
+            if (countdownInterval) clearInterval(countdownInterval);
+            document.getElementById('alert-modal').classList.add('hidden');
+
+            const med = medications.find(m => m.active === false);
+            if (med) {
+                let [h, m] = med.nextTime.split(':').map(Number);
+                h = (h + med.interval) % 24;
+                med.nextTime = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+                med.active = true;
+            }
+            saveMeds();
+            renderMeds();
+        }
+
+        function addMedication() {
+            const name = document.getElementById('med-name').value;
+            const time = document.getElementById('med-time').value;
+            const interval = document.getElementById('med-interval').value;
+            if (name && time) {
+                medications.push({id: Date.now(), name, nextTime: time, interval: parseInt(interval), active: true});
+                saveMeds();
+                renderMeds();
+                document.getElementById('med-name').value = '';
+            }
+        }
+
+        function saveMeds() { localStorage.setItem('ht_meds', JSON.stringify(medications)); }
+
+        function renderMeds() {
+            const list = document.getElementById('med-list');
+            list.innerHTML = medications.length ? '' : '<p class="text-slate-400">No active medicines.</p>';
+            medications.forEach(m => {
+                list.innerHTML += `
+                <div class="bg-white p-5 rounded-3xl border border-emerald-50 flex justify-between items-center shadow-sm">
+                    <div><h4 class="font-bold text-slate-800">${m.name}</h4><p class="text-emerald-600 text-sm">Next: ${m.nextTime}</p></div>
+                    <button onclick="deleteMed(${m.id})" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                </div>`;
+            });
+        }
+
+        function deleteMed(id) {
+            medications = medications.filter(m => m.id !== id);
+            saveMeds();
+            renderMeds();
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+    </script>
+</body>
+</html>
